@@ -1,61 +1,57 @@
-import os
+from os import system
 import time
 from ticTacToe import TicTacToe
 from dungeonCrawl import DungeonCrawl
 from gameOfLife import GameOfLife
+import configparser
 
-def clear():
-    # Para Windows
-    if os.name == 'nt':
-        _ = os.system('cls')
-    # Para Unix/Linux
-    else:
-        _ = os.system('clear')
+configuration = configparser.ConfigParser()
+configuration.read('config.ini')
+
+def print_menu():
+    _ = system('clear')
+    print("############################################################")
+    print("#################### HACKATON GAMES ########################")
+    print("############################################################")
+    print("Select Game:")
+    print("  1. Tic-Tac-Toe")
+    print("  2. Dungeon Crawl")
+    print("  3. Conway's Game of Life")
+    print("  4. Snake")
+    print("  0. EXIT")
+    print()
+    print()
+    print()
 
 finish = False
-config = "config.ini"
 
 while not finish:
-    # Seleccionar el juego 
-    print("Seleccione un juego:\n"
-      "1 - TicTacToe\n"
-      "2 - Dungeon Crawl\n"
-      "3 - Game of Life\n"
-      "4 - Salir")
-    
-    game_choice = input("Tu selección: ")
-    is_game_of_life = False
+    print_menu()
+    ch = (input(">"))
 
-    if game_choice == '1':
+    if ch == "1":
         gm = TicTacToe()
-    elif game_choice == '2':
+        conf = configuration['TicTacToe']
+    elif ch == "2":
         gm = DungeonCrawl()
-    elif game_choice == '3':
+        conf = configuration['DungeonCrawl']
+    elif ch == "3":
         gm = GameOfLife()
-        is_game_of_life = True
-    elif game_choice == '4':
-        print("Bye!")
-        break
+        conf = configuration['GameOfLife']
+    elif ch == "4":
+        gm = Snake()
+        conf = configuration['Snake']
     else:
-        print("Selección no válida. Por favor, elige un número entre 1 y 4.")
+        finish = True
         continue
 
-    gm.game_init(config)
+    gm.game_init(conf)
     gm.game_print()
-
+    
     while not gm.game_is_finish():
         gm.game_turn(gm.game_input())
-        # Solo dormir si es Game of Life
-        if is_game_of_life:
-            time.sleep(1)  
-        # Limpia la pantalla
-        clear()
         gm.game_print()
 
-    gm.game_finish_msg()
+    print(gm.game_finish_msg())
     time.sleep(1)
-
-    # Pregunta al usuario si quiere jugar de nuevo o terminar
-    play_again = input("¿Jugar de nuevo? (y/n): ")
-    if play_again.lower() != 'y':
-        finish = True
+    
